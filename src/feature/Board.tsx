@@ -3,6 +3,7 @@ import { IAssignment, IBoardAction } from '../types/interfaces';
 import { BoardPropertiesEnum } from '../types/types';
 import RedactableAssigment from '../components/RedactableAssigment';
 import FormRouter from './FormRouter';
+import { StyledBoard, AssignmentTable, StyledButton } from '../styledComponents/styledComponents';
 
 export default function Board() {
   const [currentId, setCurrentId] = useState(0);
@@ -61,7 +62,7 @@ export default function Board() {
   function generateAssignments() {
     return assignments.map((assignment) => {
       return (
-        <FormRouter onClick={handleUpdateSubmit} assigment={assignment} key={assignment.id}>
+        <FormRouter onClick={handleUpdateSubmit} assignment={assignment} key={assignment.id}>
           <RedactableAssigment assignmentData={assignment} handleDelete={handleDeleteUpdate} />
         </FormRouter>
       );
@@ -71,13 +72,13 @@ export default function Board() {
   const assignmentList = generateAssignments();
 
   return (
-    <main>
+    <StyledBoard>
       <div>
-        <button onClick={() => markAsDone()}>Mark all as done</button>
-        <button onClick={() => deleteMarked()}>Delete all completed tasks</button>
+        <StyledButton onClick={() => markAsDone()}>Mark all as done</StyledButton>
+        <StyledButton onClick={() => deleteMarked()}>Delete all completed tasks</StyledButton>
       </div>
-      <section className="assignment-table">{assignmentList}</section>
+      <AssignmentTable>{assignmentList}</AssignmentTable>
       <FormRouter onClick={handleCreateSubmit} />
-    </main>
+    </StyledBoard>
   );
 }

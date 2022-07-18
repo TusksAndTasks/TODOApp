@@ -1,5 +1,10 @@
 import React from 'react';
 import { IRedactableAssignmentProps } from '../types/interfaces';
+import {
+  AssignmentTitle,
+  AssignmentDescription,
+  StyledButton,
+} from '../styledComponents/styledComponents';
 
 export default function RedactableAssigment({
   assignmentData,
@@ -7,10 +12,10 @@ export default function RedactableAssigment({
 }: IRedactableAssignmentProps) {
   const { title, description, done } = assignmentData;
   return (
-    <div className="assignment">
-      <button onClick={() => handleDelete(assignmentData)}>Delete</button>
-      <h2 className={done ? 'done' : 'undone'}>{title}</h2>
-      <p className={done ? 'done' : 'undone'}>{description}</p>
+    <div>
+      <StyledButton onClick={() => handleDelete(assignmentData)}>Delete</StyledButton>
+      <AssignmentTitle status={done ? 'done' : 'undone'}>{title}</AssignmentTitle>
+      <AssignmentDescription status={done ? 'done' : 'undone'}>{description}</AssignmentDescription>
       <p>{done ? 'done' : 'undone'}</p>
     </div>
   );

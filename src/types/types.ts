@@ -1,5 +1,3 @@
-export type EmptyProperty = Record<string, never>;
-
 export enum AssignmentPropertiesEnum {
   TITLE = 'titleChange',
   DESCRIPTION = 'descriptionChange',

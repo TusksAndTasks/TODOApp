@@ -1,5 +1,6 @@
 import React from 'react';
+import { StyledMessage } from '../styledComponents/styledComponents';
 
 export default function ValidationMessage({ message }: { message: string }) {
-  return <div className="validation-message">{message}</div>;
+  return <StyledMessage className="validation-message">{message}</StyledMessage>;
 }

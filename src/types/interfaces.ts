@@ -14,35 +14,15 @@ export interface IDoableTasks {
   done: boolean;
 }
 
-export interface IFormState {
-  assignmentData: IAssignment;
-  isValid: boolean;
-  error: IValidationError;
-}
-
-export interface IValidationError {
-  isActive: boolean;
-  errorMessage: string;
-}
-
-export interface IBoardState {
-  assignments: IAssignment[];
-  currentId: number;
-}
-
 export interface IRedactableAssignmentProps {
   assignmentData: IAssignment;
   handleDelete: (assignment: IAssignment) => void;
 }
 
-export interface IRouterState {
-  isOpen: boolean;
-}
-
 export interface IRouterProps {
   onClick: (arg: IAssignment) => void;
   children?: ReactNode;
-  assigment?: IAssignment;
+  assignment?: IAssignment;
 }
 
 export interface IFormProps {

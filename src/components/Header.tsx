@@ -1,9 +1,10 @@
 import React from 'react';
+import { StyledMainHeading } from '../styledComponents/styledComponents';
 
 export default function Header() {
   return (
     <header>
-      <h1>TO-DO application</h1>
+      <StyledMainHeading>TO-DO application</StyledMainHeading>
     </header>
   );
 }

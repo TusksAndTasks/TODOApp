@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { IRouterProps } from '../types/interfaces';
 import Form from '../components/Form';
+import {
+  StyledButton,
+  FormContainer,
+  FormDataContainer,
+} from '../styledComponents/styledComponents';
 
-export default function FormRouter({ assigment, onClick, children }: IRouterProps) {
+export default function FormRouter({ assignment, onClick, children }: IRouterProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleForm() {
@@ -10,14 +15,19 @@ export default function FormRouter({ assigment, onClick, children }: IRouterProp
   }
 
   return isOpen ? (
-    <div className="form-container">
-      <button onClick={() => toggleForm()}>Close</button>
-      <Form onSubmit={onClick} assignment={assigment} toggleForm={toggleForm} />
-    </div>
+    <FormContainer mode={assignment ? 'update' : 'create'}>
+      <StyledButton onClick={() => toggleForm()}>Close</StyledButton>
+      <Form onSubmit={onClick} assignment={assignment} toggleForm={toggleForm} />
+    </FormContainer>
   ) : (
-    <div className="form-data-container">
+    <FormDataContainer
+      mode={assignment ? 'update' : 'create'}
+      status={assignment?.done ? 'done' : 'undone'}
+    >
       {children}
-      <button onClick={() => toggleForm()}>{children ? 'Refactor task' : 'Create task'}</button>
-    </div>
+      <StyledButton onClick={() => toggleForm()}>
+        {children ? 'Refactor task' : 'Create task'}
+      </StyledButton>
+    </FormDataContainer>
   );
 }

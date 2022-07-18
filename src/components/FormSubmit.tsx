@@ -1,5 +1,6 @@
 import React from 'react';
 import { ISubmitForm } from '../types/interfaces';
+import { StyledInput } from '../styledComponents/styledComponents';
 
 export default function FormSubmit({ submitData, isValid, onSubmit }: ISubmitForm) {
   function handleClick() {
@@ -8,5 +9,5 @@ export default function FormSubmit({ submitData, isValid, onSubmit }: ISubmitFor
     }
   }
 
-  return <input type="submit" value="Confirm action" onClick={handleClick} />;
+  return <StyledInput type="submit" value="Confirm action" onClick={handleClick} />;
 }

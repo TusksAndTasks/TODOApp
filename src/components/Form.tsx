@@ -5,6 +5,7 @@ import FormSubmit from './FormSubmit';
 import InputLabel from './InputLabel';
 import ValidationMessage from './ValidationMessage';
 import { AssignmentPropertiesEnum } from '../types/types';
+import { StyledForm } from '../styledComponents/styledComponents';
 
 export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
   let title = '';
@@ -66,21 +67,26 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
   useEffect(() => {
     const keys = Object.keys(inputsState) as Array<keyof IAssignmentData>;
     let validationResult = true;
-    let errorMessage = 'Make sure this fields are filled:';
+    let validationErrorMessage = 'Make sure this fields are filled:';
     keys.forEach((prop) => {
       if (typeof inputsState[prop] === 'string' && inputsState[prop] === '') {
-        errorMessage = errorMessage + ` ${prop}-field`;
+        validationErrorMessage = validationErrorMessage + ` ${prop}-field`;
         validationResult = false;
       }
     });
-    setErrorMessage(validationResult ? '' : errorMessage);
-    setIsValid(validationResult);
+    validationErrorMessage = validationResult ? '' : validationErrorMessage;
+    if (errorMessage !== validationErrorMessage) {
+      setErrorMessage(validationErrorMessage);
+    }
+    if (isValid !== validationResult) {
+      setIsValid(validationResult);
+    }
   }, [inputsState, errorMessage]);
 
   const inputs = generateInputs() as JSX.Element[];
   return (
-    <form
-      className="assignment-form"
+    <StyledForm
+      mode={assignment ? 'update' : 'create'}
       onSubmit={(e) => {
         e.preventDefault();
         if (!isValid) {
@@ -94,6 +100,6 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
       {inputs}
       {errorIsActive && errorMessage ? <ValidationMessage message={errorMessage} /> : null}
       <FormSubmit onSubmit={onSubmit} submitData={{ ...inputsState, id: id }} isValid={isValid} />
-    </form>
+    </StyledForm>
   );
 }
