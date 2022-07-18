@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { AssignmentPropertiesEnum, BoardPropertiesEnum } from './types';
 
 export interface IAssignment extends IAssignmentData {
   id: number;
@@ -45,7 +46,7 @@ export interface IRouterProps {
 }
 
 export interface IFormProps {
-  assigment?: IAssignment;
+  assignment?: IAssignment;
   onSubmit: (arg: IAssignment) => void;
   toggleForm: () => void;
   // onSubmit: (arg: IAssignment) => void;
@@ -63,4 +64,14 @@ export interface ISubmitForm {
   onSubmit: (arg: IAssignment) => void;
   submitData: IAssignment;
   isValid: boolean;
+}
+
+export interface IAction {
+  type: AssignmentPropertiesEnum;
+  payload: string | boolean;
+}
+
+export interface IBoardAction {
+  type: BoardPropertiesEnum;
+  payload?: IAssignment;
 }

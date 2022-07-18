@@ -1,141 +1,99 @@
-import React from 'react';
-import { IAssignment, IFormProps, IFormState, IValidationError } from '../types/interfaces';
+import React, { useEffect, useReducer, useState } from 'react';
+import { IAction, IAssignmentData, IFormProps } from '../types/interfaces';
 import { FormInput } from './FormInput';
 import FormSubmit from './FormSubmit';
 import InputLabel from './InputLabel';
 import ValidationMessage from './ValidationMessage';
+import { AssignmentPropertiesEnum } from '../types/types';
 
-export default class Form extends React.Component<IFormProps, IFormState> {
-  constructor(props: IFormProps) {
-    super(props);
+export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
+  let title = '';
+  let description = '';
+  let done = false;
+  let id = -1;
 
-    if (this.props.assigment) {
-      this.state = {
-        assignmentData: { ...this.props.assigment },
-        isValid: false,
-        error: {
-          isActive: false,
-          errorMessage: '',
-        },
-      };
-    } else {
-      this.state = {
-        assignmentData: { title: '', description: '', id: -1, done: false },
-        isValid: false,
-        error: {
-          isActive: false,
-          errorMessage: '',
-        },
-      };
+  if (assignment) {
+    ({ title, id, done, description } = assignment);
+  }
+
+  function inputReducer(state: IAssignmentData, action: IAction): IAssignmentData {
+    switch (action.type) {
+      case AssignmentPropertiesEnum.TITLE:
+        return { ...state, title: action.payload as string };
+      case AssignmentPropertiesEnum.DONE:
+        return { ...state, done: action.payload as boolean };
+      case AssignmentPropertiesEnum.DESCRIPTION:
+        return { ...state, description: action.payload as string };
+      default:
+        return { ...state };
     }
   }
 
-  handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, type } = e.target;
-    const value = type === 'checkbox' ? e.target.checked : e.target.value;
-    this.setState((state) => ({
-      ...state,
-      assignmentData: { ...state.assignmentData, [name]: value },
-    }));
+  const initialInputsState: IAssignmentData = {
+    title: title ? title : '',
+    description: description ? description : '',
+    done: done ? done : false,
   };
 
-  generateInputs() {
-    const { id } = this.state.assignmentData;
-    const keys = Object.keys(this.state.assignmentData) as Array<keyof IAssignment>;
+  const [inputsState, inputsDispatch] = useReducer(inputReducer, initialInputsState);
+  const [isValid, setIsValid] = useState(false);
+  const [errorIsActive, setErrorIsActive] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>): void {
+    const { name, type } = e.target;
+    const value = type === 'checkbox' ? e.target.checked : e.target.value;
+    inputsDispatch({ type: `${name}Change` as AssignmentPropertiesEnum, payload: value });
+  }
+
+  function generateInputs() {
+    const keys = Object.keys(inputsState) as Array<keyof IAssignmentData>;
     const inputId = id > -1 ? `${id}-upd` : `${id}-create`;
     return keys.map((key) => {
-      if (key != 'id') {
-        return (
-          <React.Fragment key={key}>
-            {this.generateLabel(inputId, key)}
-            <FormInput
-              name={key}
-              value={this.state.assignmentData[key]}
-              onChange={this.handleInput}
-              id={inputId}
-            />
-          </React.Fragment>
-        );
-      }
+      return (
+        <React.Fragment key={key}>
+          {generateLabel(inputId, key)}
+          <FormInput name={key} value={inputsState[key]} onChange={handleInput} id={inputId} />
+        </React.Fragment>
+      );
     });
   }
 
-  generateLabel(id: string, key: string) {
+  function generateLabel(id: string, key: string) {
     return <InputLabel id={id} name={key} />;
   }
 
-  validateForm() {
-    const keys = Object.keys(this.state.assignmentData) as Array<keyof IAssignment>;
+  useEffect(() => {
+    const keys = Object.keys(inputsState) as Array<keyof IAssignmentData>;
     let validationResult = true;
     let errorMessage = 'Make sure this fields are filled:';
     keys.forEach((prop) => {
-      if (
-        typeof this.state.assignmentData[prop] === 'string' &&
-        this.state.assignmentData[prop] === ''
-      ) {
+      if (typeof inputsState[prop] === 'string' && inputsState[prop] === '') {
         errorMessage = errorMessage + ` ${prop}-field`;
         validationResult = false;
       }
     });
-    this.setState((state) => ({
-      ...state,
-      error: { ...state.error, errorMessage: validationResult ? '' : errorMessage },
-      isValid: validationResult,
-    }));
-  }
+    setErrorMessage(validationResult ? '' : errorMessage);
+    setIsValid(validationResult);
+  }, [inputsState, errorMessage]);
 
-  componentDidMount() {
-    this.validateForm();
-  }
-
-  componentDidUpdate() {
-    this.validateForm();
-  }
-
-  shouldComponentUpdate(nextProps: Readonly<IFormProps>, nextState: Readonly<IFormState>) {
-    let shouldUpdate = false;
-    const keys = Object.keys(this.state.assignmentData) as Array<keyof IAssignment>;
-    const errorKeys = Object.keys(this.state.error) as Array<keyof IValidationError>;
-    keys.forEach((key) => {
-      if (this.state.assignmentData[key] !== nextState.assignmentData[key]) {
-        shouldUpdate = true;
-      }
-    });
-
-    errorKeys.forEach((key) => {
-      if (this.state.error[key] !== nextState.error[key]) {
-        shouldUpdate = true;
-      }
-    });
-
-    return shouldUpdate;
-  }
-
-  render() {
-    const inputs = this.generateInputs() as JSX.Element[];
-    return (
-      <form
-        className="assignment-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!this.state.isValid) {
-            this.setState((state) => ({ ...state, error: { ...state.error, isActive: true } }));
-          } else {
-            this.setState((state) => ({ ...state, error: { ...state.error, isActive: false } }));
-            this.props.toggleForm();
-          }
-        }}
-      >
-        {inputs}
-        {this.state.error.isActive && this.state.error.errorMessage ? (
-          <ValidationMessage message={this.state.error.errorMessage} />
-        ) : null}
-        <FormSubmit
-          onSubmit={this.props.onSubmit}
-          submitData={this.state.assignmentData}
-          isValid={this.state.isValid}
-        />
-      </form>
-    );
-  }
+  const inputs = generateInputs() as JSX.Element[];
+  return (
+    <form
+      className="assignment-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!isValid) {
+          setErrorIsActive(true);
+        } else {
+          setErrorIsActive(false);
+          toggleForm();
+        }
+      }}
+    >
+      {inputs}
+      {errorIsActive && errorMessage ? <ValidationMessage message={errorMessage} /> : null}
+      <FormSubmit onSubmit={onSubmit} submitData={{ ...inputsState, id: id }} isValid={isValid} />
+    </form>
+  );
 }

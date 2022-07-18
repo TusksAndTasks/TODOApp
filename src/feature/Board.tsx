@@ -1,113 +1,83 @@
-import React from 'react';
-import { IAssignment, IBoardState } from '../types/interfaces';
-import { EmptyProperty } from '../types/types';
+import React, { useEffect, useReducer, useState } from 'react';
+import { IAssignment, IBoardAction } from '../types/interfaces';
+import { BoardPropertiesEnum } from '../types/types';
 import RedactableAssigment from '../components/RedactableAssigment';
 import FormRouter from './FormRouter';
 
-export default class Board extends React.Component<EmptyProperty, IBoardState> {
-  constructor(props: Record<string, never>) {
-    super(props);
-    this.state = {
-      assignments: [] as IAssignment[],
-      currentId: 0,
-    };
-  }
+export default function Board() {
+  const [currentId, setCurrentId] = useState(0);
 
-  shouldComponentUpdate(nextProp: EmptyProperty, nextState: IBoardState) {
-    if (
-      nextState.currentId !== this.state.currentId &&
-      nextState.assignments.length === this.state.assignments.length
-    ) {
-      return false;
+  function boardStateReducer(state: IAssignment[], action: IBoardAction): IAssignment[] {
+    switch (action.type) {
+      case BoardPropertiesEnum.ADD:
+        return [...state, { ...(action.payload as IAssignment), id: currentId }];
+      case BoardPropertiesEnum.UPDATE:
+        return state.map((stateElem) => {
+          if (stateElem.id === (action.payload as IAssignment).id) {
+            return action.payload as IAssignment;
+          } else {
+            return stateElem;
+          }
+        });
+      case BoardPropertiesEnum.DELETE:
+        return state.filter((stateElem) => stateElem.id !== (action.payload as IAssignment).id);
+      case BoardPropertiesEnum.MARK:
+        return state.map((stateELem) => ({ ...stateELem, done: true }));
+      case BoardPropertiesEnum.DELETEMARKED:
+        return state.filter((stateELem) => !stateELem.done);
+      default:
+        return [...state];
     }
-    return true;
   }
 
-  componentDidUpdate() {
-    this.generateId();
+  const [assignments, assignmentsDispatch] = useReducer(boardStateReducer, []);
+
+  useEffect(() => generateId(), [assignments]);
+
+  function generateId() {
+    setCurrentId((prevState) => prevState + 1);
   }
 
-  generateId = () => {
-    this.setState((state) => ({ ...state, currentId: state.currentId + 1 }));
-  };
-
-  changeState(appendableAssignments: IAssignment[]) {
-    this.setState((state) => {
-      return { ...state, assignments: [...appendableAssignments] };
-    });
+  function handleCreateSubmit(assignment: IAssignment) {
+    assignmentsDispatch({ type: BoardPropertiesEnum.ADD, payload: assignment });
   }
 
-  createAssignment(assignment: IAssignment) {
-    return [...this.state.assignments, { ...assignment, id: this.state.currentId }];
+  function handleUpdateSubmit(assignment: IAssignment) {
+    assignmentsDispatch({ type: BoardPropertiesEnum.UPDATE, payload: assignment });
   }
 
-  updateAssigment(assignment: IAssignment) {
-    return this.state.assignments.map((stateElem) => {
-      if (stateElem.id === assignment.id) {
-        return assignment;
-      } else {
-        return stateElem;
-      }
-    }) as IAssignment[];
+  function handleDeleteUpdate(assignment: IAssignment) {
+    assignmentsDispatch({ type: BoardPropertiesEnum.DELETE, payload: assignment });
   }
 
-  deleteAssignment(assignments: IAssignment[], id: number) {
-    return assignments.filter((stateElem) => {
-      if (stateElem.id !== id) {
-        return stateElem;
-      }
-    }) as IAssignment[];
+  function markAsDone() {
+    assignmentsDispatch({ type: BoardPropertiesEnum.MARK });
   }
 
-  handleCreateSubmit = (assignment: IAssignment) => {
-    const appendableAssignments = this.createAssignment(assignment);
-    this.changeState(appendableAssignments);
-  };
-
-  handleUpdateSubmit = (assignment: IAssignment) => {
-    const appendableAssignments = this.updateAssigment(assignment);
-    this.changeState(appendableAssignments);
-  };
-
-  handleDeleteUpdate = (assignment: IAssignment) => {
-    const appendableAssignments = this.deleteAssignment(this.state.assignments, assignment.id);
-    this.changeState(appendableAssignments);
-  };
-
-  markAsDone() {
-    const markedAssignments = this.state.assignments.map((assignment) => ({
-      ...assignment,
-      done: true,
-    }));
-    this.changeState(markedAssignments);
+  function deleteMarked() {
+    assignmentsDispatch({ type: BoardPropertiesEnum.DELETEMARKED });
   }
 
-  deleteMarked() {
-    const doneTasks = this.state.assignments.filter((assignment: IAssignment) => !assignment.done);
-    this.changeState(doneTasks);
-  }
-
-  generateAssignments() {
-    return this.state.assignments.map((assignment) => {
+  function generateAssignments() {
+    return assignments.map((assignment) => {
       return (
-        <FormRouter onClick={this.handleUpdateSubmit} assigment={assignment} key={assignment.id}>
-          <RedactableAssigment assignmentData={assignment} handleDelete={this.handleDeleteUpdate} />
+        <FormRouter onClick={handleUpdateSubmit} assigment={assignment} key={assignment.id}>
+          <RedactableAssigment assignmentData={assignment} handleDelete={handleDeleteUpdate} />
         </FormRouter>
       );
     });
   }
 
-  render() {
-    const assignmentList = this.generateAssignments();
-    return (
-      <main>
-        <div>
-          <button onClick={() => this.markAsDone()}>Mark all as done</button>
-          <button onClick={() => this.deleteMarked()}>Delete all completed tasks</button>
-        </div>
-        <section className="assignment-table">{assignmentList}</section>
-        <FormRouter onClick={this.handleCreateSubmit} />
-      </main>
-    );
-  }
+  const assignmentList = generateAssignments();
+
+  return (
+    <main>
+      <div>
+        <button onClick={() => markAsDone()}>Mark all as done</button>
+        <button onClick={() => deleteMarked()}>Delete all completed tasks</button>
+      </div>
+      <section className="assignment-table">{assignmentList}</section>
+      <FormRouter onClick={handleCreateSubmit} />
+    </main>
+  );
 }

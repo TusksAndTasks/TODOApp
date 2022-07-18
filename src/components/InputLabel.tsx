@@ -1,7 +1,5 @@
 import React from 'react';
 
-export default class InputLabel extends React.PureComponent<{ id: string; name: string }> {
-  render() {
-    return <label htmlFor={this.props.id}>{this.props.name}</label>;
-  }
+export default function InputLabel({ id, name }: { id: string; name: string }) {
+  return <label htmlFor={id}>{name}</label>;
 }

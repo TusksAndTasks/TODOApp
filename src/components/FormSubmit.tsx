@@ -1,15 +1,12 @@
 import React from 'react';
 import { ISubmitForm } from '../types/interfaces';
 
-export default class FormSubmit extends React.Component<ISubmitForm> {
-  handleClick() {
-    const { submitData, isValid } = this.props;
+export default function FormSubmit({ submitData, isValid, onSubmit }: ISubmitForm) {
+  function handleClick() {
     if (isValid) {
-      this.props.onSubmit(submitData);
+      onSubmit(submitData);
     }
   }
 
-  render() {
-    return <input type="submit" value="Confirm action" onClick={() => this.handleClick()} />;
-  }
+  return <input type="submit" value="Confirm action" onClick={handleClick} />;
 }
