@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { Link, NavLink } from 'react-router-dom';
 
 // export const GlobalStyle = createGlobalStyle`
 //   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
@@ -116,5 +117,22 @@ export const FormDataContainer = styled.div<{ mode: string; status: string }>`
   & h2,
   & p {
     font-family: 'Roboto Slab', serif;
+  }
+`;
+
+export const StyledLink = styled(Link)`
+  text-decoration: inherit;
+  color: inherit;
+
+  & :hover {
+    cursor: pointer;
+  }
+`;
+
+export const StyledNavLink = styled(NavLink)`
+  color: black;
+
+  &[class*='active'] {
+    color: red;
   }
 `;

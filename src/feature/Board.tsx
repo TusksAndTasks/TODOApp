@@ -3,7 +3,12 @@ import { IAssignment, IBoardAction } from '../types/interfaces';
 import { BoardPropertiesEnum } from '../types/types';
 import RedactableAssigment from '../components/RedactableAssigment';
 import FormRouter from './FormRouter';
-import { StyledBoard, AssignmentTable, StyledButton } from '../styledComponents/styledComponents';
+import {
+  StyledBoard,
+  AssignmentTable,
+  StyledButton,
+  StyledLink,
+} from '../styledComponents/styledComponents';
 
 export default function Board() {
   const [currentId, setCurrentId] = useState(0);
@@ -63,7 +68,14 @@ export default function Board() {
     return assignments.map((assignment) => {
       return (
         <FormRouter onClick={handleUpdateSubmit} assignment={assignment} key={assignment.id}>
-          <RedactableAssigment assignmentData={assignment} handleDelete={handleDeleteUpdate} />
+          <StyledLink
+            to={{
+              pathname: `assignment/${assignment.id}`,
+            }}
+            state={assignment}
+          >
+            <RedactableAssigment assignmentData={assignment} handleDelete={handleDeleteUpdate} />
+          </StyledLink>
         </FormRouter>
       );
     });

@@ -13,7 +13,15 @@ export default function RedactableAssigment({
   const { title, description, done } = assignmentData;
   return (
     <div>
-      <StyledButton onClick={() => handleDelete(assignmentData)}>Delete</StyledButton>
+      <StyledButton
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleDelete(assignmentData);
+        }}
+      >
+        Delete
+      </StyledButton>
       <AssignmentTitle status={done ? 'done' : 'undone'}>{title}</AssignmentTitle>
       <AssignmentDescription status={done ? 'done' : 'undone'}>{description}</AssignmentDescription>
       <p>{done ? 'done' : 'undone'}</p>

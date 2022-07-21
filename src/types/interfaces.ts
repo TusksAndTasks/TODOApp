@@ -55,3 +55,8 @@ export interface IBoardAction {
   type: BoardPropertiesEnum;
   payload?: IAssignment;
 }
+
+export interface ILocation {
+  pathname: string;
+  state: IAssignment;
+}
