@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { IAssignment, IBoardAction } from '../types/interfaces';
+import { IAssignment, IAssignmentLite, IBoardAction } from '../types/interfaces';
 import { BoardPropertiesEnum } from '../types/types';
 import RedactableAssigment from '../components/RedactableAssigment';
 import FormRouter from './FormRouter';
@@ -52,7 +52,7 @@ export default function Board() {
     assignmentsDispatch({ type: BoardPropertiesEnum.UPDATE, payload: assignment });
   }
 
-  function handleDeleteUpdate(assignment: IAssignment) {
+  function handleDeleteUpdate(assignment: IAssignmentLite) {
     assignmentsDispatch({ type: BoardPropertiesEnum.DELETE, payload: assignment });
   }
 
@@ -74,7 +74,10 @@ export default function Board() {
             }}
             state={assignment}
           >
-            <RedactableAssigment assignmentData={assignment} handleDelete={handleDeleteUpdate} />
+            <RedactableAssigment
+              assignmentData={{ title: assignment.title, done: assignment.done, id: assignment.id }}
+              handleDelete={handleDeleteUpdate}
+            />
           </StyledLink>
         </FormRouter>
       );

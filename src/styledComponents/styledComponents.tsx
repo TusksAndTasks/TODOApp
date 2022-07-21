@@ -1,9 +1,12 @@
-import styled, { css } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import { Link, NavLink } from 'react-router-dom';
 
-// export const GlobalStyle = createGlobalStyle`
+export const GlobalStyle = createGlobalStyle`
+   body {
+     margin: 0;
+   }
+`;
 //   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
-// `;
 //Это работает, но консоль пишет, что styled components такое не может нормально обрабатывать и советуют вставить ссылку напрмую в хтмл.
 
 const toggleElem = css`
@@ -37,10 +40,12 @@ const status = css<{ status: string }>`
 
 export const AssignmentTitle = styled.h2<{ status: string }>`
   ${status};
+  font-size: 2em;
 `;
 
 export const AssignmentDescription = styled.p<{ status: string }>`
-  ${status}
+  ${status};
+  font-size: 1.5em;
 `;
 
 export const StyledMessage = styled.div`
@@ -50,9 +55,14 @@ export const StyledMessage = styled.div`
   padding: 10px;
 `;
 
+export const StyledHeader = styled.header`
+  background-color: rgba(12, 107, 213, 0.74);
+`;
+
 export const StyledMainHeading = styled.h1`
   background-color: rgba(12, 107, 213, 0.74);
   text-align: center;
+  color: white;
 `;
 
 export const StyledBoard = styled.main`
@@ -65,6 +75,7 @@ export const AssignmentTable = styled.section`
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
+  align-items: flex-start;
   gap: 20px;
   margin-bottom: 40px;
 `;
@@ -93,11 +104,11 @@ export const FormContainer = styled.div<{ mode: string }>`
   ${conditionalFormStyle};
   background-color: ${(props) => (props.mode === 'create' ? 'aliceblue' : 'white')};
   border-radius: 25px;
-  & label {
+  &label {
     font-family: 'Roboto Slab', serif;
   }
 
-  & input[type='text'] {
+  &input[type='text'] {
     width: 60%;
   }
 `;
@@ -114,8 +125,8 @@ export const FormDataContainer = styled.div<{ mode: string; status: string }>`
   text-align: center;
   border-radius: 25px;
 
-  & h2,
-  & p {
+  &h2,
+  &p {
     font-family: 'Roboto Slab', serif;
   }
 `;
@@ -124,15 +135,97 @@ export const StyledLink = styled(Link)`
   text-decoration: inherit;
   color: inherit;
 
-  & :hover {
+  &:hover {
     cursor: pointer;
   }
 `;
 
+export const StyledNav = styled.nav`
+  width: 100%;
+  background-color: rgba(12, 107, 213, 0.74);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 50px;
+`;
+
 export const StyledNavLink = styled(NavLink)`
-  color: black;
+  color: white;
+  text-decoration: none;
+  font-family: 'Roboto Slab', serif;
+  font-size: 24px;
 
   &[class*='active'] {
-    color: red;
+    color: black;
+  }
+`;
+
+export const StyledPreviewImage = styled.img`
+  width: 100px;
+  height: auto;
+`;
+
+export const FullAssignment = styled.div`
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 20%;
+  margin-top: 100px;
+  background-color: #d9d1de;
+  border-radius: 25px;
+  border: 1px solid #dcd3d3;
+  box-shadow: 0 -2px 2px 2px gray;
+  box-sizing: border-box;
+`;
+
+export const StyledFullImage = styled.img`
+  width: 75%;
+  height: auto;
+  transition: 1s;
+  transition-delay: 0.5s;
+  padding-bottom: 30px;
+
+  &:hover {
+    cursor: zoom-in;
+    width: 95%;
+  }
+`;
+
+const BasicUniquePage = css`
+  width: 100%;
+  height: 89.5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto Slab', serif;
+  font-size: 30px;
+`;
+
+export const StyledAuthPage = styled.div`
+  ${BasicUniquePage}
+  background-color: #d5f1d5;
+`;
+
+export const StyledNotFoundPage = styled.div`
+  ${BasicUniquePage}
+  background-color: #f3d1d1;
+`;
+
+export const StyledToggle = styled.button`
+  font-size: 12px;
+  padding: 4px;
+  background-color: white;
+  color: black;
+  border-radius: 25px;
+  width: 120px;
+  transition: 1s;
+  margin: 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: white;
+    background-color: black;
   }
 `;

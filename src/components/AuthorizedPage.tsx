@@ -1,3 +1,5 @@
+import { StyledAuthPage } from '../styledComponents/styledComponents';
+
 export default function AuthorizedPage() {
-  return <div>NEW PAGE</div>;
+  return <StyledAuthPage>You are an authorized user!</StyledAuthPage>;
 }

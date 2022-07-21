@@ -6,17 +6,23 @@ export interface IAssignment extends IAssignmentData {
 }
 
 export interface IAssignmentData extends IDoableTasks {
-  title: string;
   description: string;
+  author: string;
+  file: string;
+}
+
+export interface IAssignmentLite extends IDoableTasks {
+  id: number;
 }
 
 export interface IDoableTasks {
+  title: string;
   done: boolean;
 }
 
 export interface IRedactableAssignmentProps {
-  assignmentData: IAssignment;
-  handleDelete: (assignment: IAssignment) => void;
+  assignmentData: IAssignmentLite;
+  handleDelete: (assignment: IAssignmentLite) => void;
 }
 
 export interface IRouterProps {
@@ -46,14 +52,14 @@ export interface ISubmitForm {
   isValid: boolean;
 }
 
-export interface IAction {
+export interface IFormAction {
   type: AssignmentPropertiesEnum;
-  payload: string | boolean;
+  payload: string | boolean | FileList | null;
 }
 
 export interface IBoardAction {
   type: BoardPropertiesEnum;
-  payload?: IAssignment;
+  payload?: IAssignmentLite | IAssignment;
 }
 
 export interface ILocation {

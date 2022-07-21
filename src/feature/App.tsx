@@ -5,16 +5,19 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AuthorizedPage from '../components/AuthorizedPage';
 import AssignmentPage from '../components/AssignmentPage';
 import PageNotFound from '../components/PageNotFound';
-// import { GlobalStyle } from '../styledComponents/styledComponents';
+import { GlobalStyle } from '../styledComponents/styledComponents';
 
 export default function App() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isAuth, setIsAuth] = useState(true);
+
+  function toggleAuth() {
+    setIsAuth(!isAuth);
+  }
 
   return (
     <>
-      {/*<GlobalStyle />*/}
-      <Header />
+      <GlobalStyle />
+      <Header onClick={toggleAuth} />
       <Routes>
         <Route path="/" element={<Board />}></Route>
         <Route

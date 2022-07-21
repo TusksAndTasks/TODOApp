@@ -1,3 +1,5 @@
+import { StyledNotFoundPage } from '../styledComponents/styledComponents';
+
 export default function PageNotFound() {
-  return <p>404</p>;
+  return <StyledNotFoundPage>Ooops... Page not found!</StyledNotFoundPage>;
 }

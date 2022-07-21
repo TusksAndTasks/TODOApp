@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { IAction, IAssignmentData, IFormProps } from '../types/interfaces';
+import { IAssignmentData, IFormAction, IFormProps } from '../types/interfaces';
 import { FormInput } from './FormInput';
 import FormSubmit from './FormSubmit';
 import InputLabel from './InputLabel';
@@ -12,12 +12,14 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
   let description = '';
   let done = false;
   let id = -1;
+  let author = '';
+  let file = '';
 
   if (assignment) {
-    ({ title, id, done, description } = assignment);
+    ({ title, id, done, description, author, file } = assignment);
   }
 
-  function inputReducer(state: IAssignmentData, action: IAction): IAssignmentData {
+  function inputReducer(state: IAssignmentData, action: IFormAction): IAssignmentData {
     switch (action.type) {
       case AssignmentPropertiesEnum.TITLE:
         return { ...state, title: action.payload as string };
@@ -25,6 +27,13 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
         return { ...state, done: action.payload as boolean };
       case AssignmentPropertiesEnum.DESCRIPTION:
         return { ...state, description: action.payload as string };
+      case AssignmentPropertiesEnum.AUTHOR:
+        return { ...state, author: action.payload as string };
+      case AssignmentPropertiesEnum.FILE:
+        return {
+          ...state,
+          file: action.payload ? URL.createObjectURL((action.payload as FileList)[0]) : '',
+        };
       default:
         return { ...state };
     }
@@ -34,6 +43,8 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
     title: title ? title : '',
     description: description ? description : '',
     done: done ? done : false,
+    author: author ? author : '',
+    file: file ? file : '',
   };
 
   const [inputsState, inputsDispatch] = useReducer(inputReducer, initialInputsState);
@@ -43,7 +54,8 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>): void {
     const { name, type } = e.target;
-    const value = type === 'checkbox' ? e.target.checked : e.target.value;
+    const value =
+      type === 'checkbox' ? e.target.checked : type === 'file' ? e.target.files : e.target.value;
     inputsDispatch({ type: `${name}Change` as AssignmentPropertiesEnum, payload: value });
   }
 
@@ -69,7 +81,7 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
     let validationResult = true;
     let validationErrorMessage = 'Make sure this fields are filled:';
     keys.forEach((prop) => {
-      if (typeof inputsState[prop] === 'string' && inputsState[prop] === '') {
+      if (typeof inputsState[prop] === 'string' && inputsState[prop] === '' && prop !== 'file') {
         validationErrorMessage = validationErrorMessage + ` ${prop}-field`;
         validationResult = false;
       }

@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyledMainHeading, StyledNavLink } from '../styledComponents/styledComponents';
+import { StyledHeader, StyledMainHeading } from '../styledComponents/styledComponents';
+import Navigation from './Navigation';
 
-export default function Header() {
+export default function Header({ onClick }: { onClick: () => void }) {
   return (
-    <header>
+    <StyledHeader>
       <StyledMainHeading>TO-DO application</StyledMainHeading>
-      <StyledNavLink to="/">Main</StyledNavLink>
-      <StyledNavLink to="/Authorized">Auth</StyledNavLink>
-    </header>
+      <Navigation onClick={onClick}></Navigation>
+    </StyledHeader>
   );
 }
