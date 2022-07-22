@@ -1,8 +1,8 @@
 import { StyledNav, StyledNavLink, StyledToggle } from '../styledComponents/styledComponents';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { GlobalDispatch } from '../reedux/store';
-import { toggleAuth } from '../reedux/slices/AuthorizationSlice';
+import { GlobalDispatch } from '../redux/store';
+import { toggleAuth } from '../redux/slices/AuthorizationSlice';
 
 export default function Navigation() {
   const authDispatch = useDispatch() as GlobalDispatch;

@@ -7,7 +7,7 @@ import AssignmentPage from '../components/AssignmentPage';
 import PageNotFound from '../components/PageNotFound';
 import { GlobalStyle } from '../styledComponents/styledComponents';
 import { useSelector } from 'react-redux';
-import { GlobalState } from '../reedux/store';
+import { GlobalState } from '../redux/store';
 
 export default function App() {
   const isAuth = useSelector((state: GlobalState) => state.authorization.auth);

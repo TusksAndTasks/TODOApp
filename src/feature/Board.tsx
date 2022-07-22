@@ -8,14 +8,14 @@ import {
   StyledLink,
 } from '../styledComponents/styledComponents';
 import { useDispatch, useSelector } from 'react-redux';
-import { GlobalDispatch, GlobalState } from '../reedux/store';
+import { GlobalDispatch, GlobalState } from '../redux/store';
 import {
   addAssignment,
   deleteAssignment,
   deleteMarkedAssignments,
   markAssignmentsAsDone,
   updateAssignment,
-} from '../reedux/slices/AssignmentsSlice';
+} from '../redux/slices/AssignmentsSlice';
 
 export default function Board() {
   const assignmentsDispatch = useDispatch() as GlobalDispatch;
