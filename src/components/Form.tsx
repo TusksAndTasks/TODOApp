@@ -40,11 +40,11 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
   }
 
   const initialInputsState: IAssignmentData = {
-    title: title ? title : '',
-    description: description ? description : '',
-    done: done ? done : false,
-    author: author ? author : '',
-    file: file ? file : '',
+    title: title,
+    description: description,
+    done: done,
+    author: author,
+    file: file,
   };
 
   const [inputsState, inputsDispatch] = useReducer(inputReducer, initialInputsState);

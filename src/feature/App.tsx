@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Header from '../components/Header';
 import Board from './Board';
 import { Navigate, Route, Routes } from 'react-router-dom';
@@ -6,18 +6,16 @@ import AuthorizedPage from '../components/AuthorizedPage';
 import AssignmentPage from '../components/AssignmentPage';
 import PageNotFound from '../components/PageNotFound';
 import { GlobalStyle } from '../styledComponents/styledComponents';
+import { useSelector } from 'react-redux';
+import { GlobalState } from '../reedux/store';
 
 export default function App() {
-  const [isAuth, setIsAuth] = useState(true);
-
-  function toggleAuth() {
-    setIsAuth(!isAuth);
-  }
+  const isAuth = useSelector((state: GlobalState) => state.authorization.auth);
 
   return (
     <>
       <GlobalStyle />
-      <Header onClick={toggleAuth} />
+      <Header />
       <Routes>
         <Route path="/" element={<Board />}></Route>
         <Route

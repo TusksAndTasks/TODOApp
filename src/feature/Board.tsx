@@ -1,6 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import { IAssignment, IAssignmentLite, IBoardAction } from '../types/interfaces';
-import { BoardPropertiesEnum } from '../types/types';
+import { IAssignment, IAssignmentLite } from '../types/interfaces';
 import RedactableAssigment from '../components/RedactableAssigment';
 import FormRouter from './FormRouter';
 import {
@@ -9,59 +7,38 @@ import {
   StyledButton,
   StyledLink,
 } from '../styledComponents/styledComponents';
+import { useDispatch, useSelector } from 'react-redux';
+import { GlobalDispatch, GlobalState } from '../reedux/store';
+import {
+  addAssignment,
+  deleteAssignment,
+  deleteMarkedAssignments,
+  markAssignmentsAsDone,
+  updateAssignment,
+} from '../reedux/slices/AssignmentsSlice';
 
 export default function Board() {
-  const [currentId, setCurrentId] = useState(0);
-
-  function boardStateReducer(state: IAssignment[], action: IBoardAction): IAssignment[] {
-    switch (action.type) {
-      case BoardPropertiesEnum.ADD:
-        return [...state, { ...(action.payload as IAssignment), id: currentId }];
-      case BoardPropertiesEnum.UPDATE:
-        return state.map((stateElem) => {
-          if (stateElem.id === (action.payload as IAssignment).id) {
-            return action.payload as IAssignment;
-          } else {
-            return stateElem;
-          }
-        });
-      case BoardPropertiesEnum.DELETE:
-        return state.filter((stateElem) => stateElem.id !== (action.payload as IAssignment).id);
-      case BoardPropertiesEnum.MARK:
-        return state.map((stateELem) => ({ ...stateELem, done: true }));
-      case BoardPropertiesEnum.DELETEMARKED:
-        return state.filter((stateELem) => !stateELem.done);
-      default:
-        return [...state];
-    }
-  }
-
-  const [assignments, assignmentsDispatch] = useReducer(boardStateReducer, []);
-
-  useEffect(() => generateId(), [assignments]);
-
-  function generateId() {
-    setCurrentId((prevState) => prevState + 1);
-  }
+  const assignmentsDispatch = useDispatch() as GlobalDispatch;
+  const assignments = useSelector((state: GlobalState) => state.assignments.assignments);
 
   function handleCreateSubmit(assignment: IAssignment) {
-    assignmentsDispatch({ type: BoardPropertiesEnum.ADD, payload: assignment });
+    assignmentsDispatch(addAssignment(assignment));
   }
 
   function handleUpdateSubmit(assignment: IAssignment) {
-    assignmentsDispatch({ type: BoardPropertiesEnum.UPDATE, payload: assignment });
+    assignmentsDispatch(updateAssignment(assignment));
   }
 
   function handleDeleteUpdate(assignment: IAssignmentLite) {
-    assignmentsDispatch({ type: BoardPropertiesEnum.DELETE, payload: assignment });
+    assignmentsDispatch(deleteAssignment(assignment));
   }
 
   function markAsDone() {
-    assignmentsDispatch({ type: BoardPropertiesEnum.MARK });
+    assignmentsDispatch(markAssignmentsAsDone());
   }
 
   function deleteMarked() {
-    assignmentsDispatch({ type: BoardPropertiesEnum.DELETEMARKED });
+    assignmentsDispatch(deleteMarkedAssignments());
   }
 
   function generateAssignments() {

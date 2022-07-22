@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { AssignmentPropertiesEnum, BoardPropertiesEnum } from './types';
+import { AssignmentPropertiesEnum } from './types';
 
 export interface IAssignment extends IAssignmentData {
   id: number;
@@ -35,11 +35,9 @@ export interface IFormProps {
   assignment?: IAssignment;
   onSubmit: (arg: IAssignment) => void;
   toggleForm: () => void;
-  // onSubmit: (arg: IAssignment) => void;
 }
 
 export interface IInputProps {
-  // type: string;
   id: string;
   name: string;
   value: string | boolean;
@@ -55,11 +53,6 @@ export interface ISubmitForm {
 export interface IFormAction {
   type: AssignmentPropertiesEnum;
   payload: string | boolean | FileList | null;
-}
-
-export interface IBoardAction {
-  type: BoardPropertiesEnum;
-  payload?: IAssignmentLite | IAssignment;
 }
 
 export interface ILocation {
