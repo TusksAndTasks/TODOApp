@@ -1,5 +1,5 @@
-import { IAssignment } from '../../types/interfaces';
-import { createSlice } from '@reduxjs/toolkit';
+import { IAssignment, IAssignmentLite } from '../../types/interfaces';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: {
   assignments: Array<IAssignment>;
@@ -9,10 +9,10 @@ const assignmentSlice = createSlice({
   name: 'assignments',
   initialState,
   reducers: {
-    addAssignment: (state, action) => {
+    addAssignment: (state, action: PayloadAction<IAssignment>) => {
       state.assignments.push({ ...action.payload, id: Date.now() });
     },
-    updateAssignment: (state, action) => {
+    updateAssignment: (state, action: PayloadAction<IAssignment>) => {
       state.assignments = state.assignments.map((stateElem) => {
         if (stateElem.id === action.payload.id) {
           return action.payload;
@@ -21,7 +21,7 @@ const assignmentSlice = createSlice({
         }
       });
     },
-    deleteAssignment: (state, action) => {
+    deleteAssignment: (state, action: PayloadAction<IAssignmentLite>) => {
       state.assignments = state.assignments.filter(
         (stateElem) => stateElem.id !== action.payload.id
       );
