@@ -7,13 +7,14 @@ import FormRouter from './FormRouter';
 
 import { EmptyProperty } from '../types/types';
 import { IAssignment, IBoardState } from '../types/interfaces';
+import { apiController } from '../utils/api';
 
 export default class Board extends React.Component<EmptyProperty, IBoardState> {
   constructor(props: Record<string, never>) {
     super(props);
     this.state = {
       assignments: [] as IAssignment[],
-      currentId: 0,
+      currentId: 100,
     };
   }
 
@@ -22,6 +23,12 @@ export default class Board extends React.Component<EmptyProperty, IBoardState> {
       nextState.currentId !== this.state.currentId &&
       nextState.assignments.length === this.state.assignments.length
     );
+  }
+
+  async componentDidMount() {
+    const assignments = await apiController.getAssignments();
+
+    this.changeState(assignments);
   }
 
   componentDidUpdate() {
@@ -38,54 +45,95 @@ export default class Board extends React.Component<EmptyProperty, IBoardState> {
     });
   }
 
-  createAssignment(assignment: IAssignment) {
-    return [...this.state.assignments, { ...assignment, id: this.state.currentId }];
+  async createAssignment(assignment: IAssignment) {
+    const indexedAssignment = { ...assignment, id: this.state.currentId };
+
+    const response = await apiController.createAssignment(indexedAssignment);
+    if (response) {
+      return [...this.state.assignments, indexedAssignment];
+    }
   }
 
-  updateAssigment(assignment: IAssignment) {
-    return this.state.assignments.map((stateElem) => {
-      if (stateElem.id === assignment.id) {
-        return assignment;
-      } else {
-        return stateElem;
-      }
-    }) as IAssignment[];
+  async updateAssigment(assignment: IAssignment) {
+    const response = await apiController.updateAssignment(assignment);
+    if (response) {
+      return this.state.assignments.map((stateElem) => {
+        if (stateElem.id === assignment.id) {
+          return assignment;
+        } else {
+          return stateElem;
+        }
+      }) as IAssignment[];
+    }
   }
 
-  deleteAssignment(assignments: IAssignment[], id: number) {
-    return assignments.filter((stateElem) => {
-      if (stateElem.id !== id) {
-        return stateElem;
-      }
-    }) as IAssignment[];
+  async deleteAssignment(assignments: IAssignment[], id: number) {
+    const response = await apiController.deleteAssignment(id);
+    if (response) {
+      return assignments.filter((stateElem) => {
+        if (stateElem.id !== id) {
+          return stateElem;
+        }
+      }) as IAssignment[];
+    }
   }
 
-  handleCreateSubmit = (assignment: IAssignment) => {
-    const appendableAssignments = this.createAssignment(assignment);
-    this.changeState(appendableAssignments);
+  handleCreateSubmit = async (assignment: IAssignment) => {
+    const appendableAssignments = await this.createAssignment(assignment);
+    if (appendableAssignments) {
+      this.changeState(appendableAssignments);
+    }
   };
 
-  handleUpdateSubmit = (assignment: IAssignment) => {
-    const appendableAssignments = this.updateAssigment(assignment);
-    this.changeState(appendableAssignments);
+  handleUpdateSubmit = async (assignment: IAssignment) => {
+    const appendableAssignments = await this.updateAssigment(assignment);
+    if (appendableAssignments) {
+      this.changeState(appendableAssignments);
+    }
   };
 
-  handleDeleteUpdate = (assignment: IAssignment) => {
-    const appendableAssignments = this.deleteAssignment(this.state.assignments, assignment.id);
-    this.changeState(appendableAssignments);
+  handleDeleteUpdate = async (assignment: IAssignment) => {
+    const appendableAssignments = await this.deleteAssignment(
+      this.state.assignments,
+      assignment.id
+    );
+    if (appendableAssignments) {
+      this.changeState(appendableAssignments);
+    }
   };
 
-  markAsDone = () => {
-    const markedAssignments = this.state.assignments.map((assignment) => ({
-      ...assignment,
-      done: true,
-    }));
+  markAsDone = async () => {
+    const markedAssignments = await Promise.all(
+      this.state.assignments.map(async (assignment) => {
+        const doneAssignment = {
+          ...assignment,
+          done: true,
+        };
+
+        const response = await this.updateAssigment(doneAssignment);
+        if (response) {
+          return doneAssignment;
+        } else {
+          throw new Error(`Server error: unable to mark ${doneAssignment.id}-assignment as done`);
+        }
+      })
+    );
     this.changeState(markedAssignments);
   };
 
-  deleteMarked = () => {
-    const doneTasks = this.state.assignments.filter((assignment: IAssignment) => !assignment.done);
-    this.changeState(doneTasks);
+  deleteMarked = async () => {
+    const doneTasks = this.state.assignments.filter((assignment: IAssignment) => assignment.done);
+
+    const response = await Promise.all(
+      doneTasks.map((task) => apiController.deleteAssignment(task.id))
+    );
+
+    if (response) {
+      const undoneTasks = this.state.assignments.filter(
+        (assignment: IAssignment) => !assignment.done
+      );
+      this.changeState(undoneTasks);
+    }
   };
 
   generateAssignments = () => {
