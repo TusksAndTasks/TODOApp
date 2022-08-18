@@ -1,8 +1,12 @@
 import React from 'react';
-import { IAssignment, IBoardState } from '../types/interfaces';
-import { EmptyProperty } from '../types/types';
-import RedactableAssigment from '../components/RedactableAssigment';
+
+import { ButtonPrimitive } from '../primitives/ButtonPrimitive';
+
+import RedactableAssigment from './RedactableAssigment';
 import FormRouter from './FormRouter';
+
+import { EmptyProperty } from '../types/types';
+import { IAssignment, IBoardState } from '../types/interfaces';
 
 export default class Board extends React.Component<EmptyProperty, IBoardState> {
   constructor(props: Record<string, never>) {
@@ -14,13 +18,10 @@ export default class Board extends React.Component<EmptyProperty, IBoardState> {
   }
 
   shouldComponentUpdate(nextProp: EmptyProperty, nextState: IBoardState) {
-    if (
+    return !(
       nextState.currentId !== this.state.currentId &&
       nextState.assignments.length === this.state.assignments.length
-    ) {
-      return false;
-    }
-    return true;
+    );
   }
 
   componentDidUpdate() {
@@ -74,20 +75,20 @@ export default class Board extends React.Component<EmptyProperty, IBoardState> {
     this.changeState(appendableAssignments);
   };
 
-  markAsDone() {
+  markAsDone = () => {
     const markedAssignments = this.state.assignments.map((assignment) => ({
       ...assignment,
       done: true,
     }));
     this.changeState(markedAssignments);
-  }
+  };
 
-  deleteMarked() {
+  deleteMarked = () => {
     const doneTasks = this.state.assignments.filter((assignment: IAssignment) => !assignment.done);
     this.changeState(doneTasks);
-  }
+  };
 
-  generateAssignments() {
+  generateAssignments = () => {
     return this.state.assignments.map((assignment) => {
       return (
         <FormRouter onClick={this.handleUpdateSubmit} assigment={assignment} key={assignment.id}>
@@ -95,15 +96,19 @@ export default class Board extends React.Component<EmptyProperty, IBoardState> {
         </FormRouter>
       );
     });
-  }
+  };
 
   render() {
     const assignmentList = this.generateAssignments();
     return (
       <main>
         <div>
-          <button onClick={() => this.markAsDone()}>Mark all as done</button>
-          <button onClick={() => this.deleteMarked()}>Delete all completed tasks</button>
+          <ButtonPrimitive className="button-like" onClick={this.markAsDone}>
+            Mark all as done
+          </ButtonPrimitive>
+          <ButtonPrimitive className="button-like" onClick={this.deleteMarked}>
+            Delete all completed tasks
+          </ButtonPrimitive>
         </div>
         <section className="assignment-table">{assignmentList}</section>
         <FormRouter onClick={this.handleCreateSubmit} />

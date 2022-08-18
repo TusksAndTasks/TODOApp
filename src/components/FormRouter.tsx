@@ -1,6 +1,10 @@
 import React from 'react';
+
+import { ButtonPrimitive } from '../primitives/ButtonPrimitive';
+
+import Form from './Form';
+
 import { IRouterProps, IRouterState } from '../types/interfaces';
-import Form from '../components/Form';
 
 export default class FormRouter extends React.Component<IRouterProps, IRouterState> {
   constructor(props: IRouterProps) {
@@ -17,7 +21,9 @@ export default class FormRouter extends React.Component<IRouterProps, IRouterSta
   render() {
     return this.state.isOpen ? (
       <div className="form-container">
-        <button onClick={() => this.toggleForm()}>Close</button>
+        <ButtonPrimitive className="button-like" onClick={this.toggleForm}>
+          Close
+        </ButtonPrimitive>
         <Form
           onSubmit={this.props.onClick}
           assigment={this.props.assigment}
@@ -27,9 +33,9 @@ export default class FormRouter extends React.Component<IRouterProps, IRouterSta
     ) : (
       <div className="form-data-container">
         {this.props.children}
-        <button onClick={() => this.toggleForm()}>
+        <ButtonPrimitive className="button-like" onClick={this.toggleForm}>
           {this.props.children ? 'Refactor task' : 'Create task'}
-        </button>
+        </ButtonPrimitive>
       </div>
     );
   }

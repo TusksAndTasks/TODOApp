@@ -12,8 +12,7 @@ main{
   align-items: center;
 }
 
-button,
-input[type=submit]{
+.button-like {
   width: 200px;
   font-size: 20px;
   background-color: #b9c6d5;
@@ -32,7 +31,7 @@ input[type=submit]{
 .assignment-table{
   display: flex;
   flex-flow: row wrap;
-  justify-content: start;
+  justify-content: flex-start;
   gap: 20px;
   margin-bottom: 40px;
 }
@@ -65,14 +64,6 @@ input[type=submit]{
   border: red solid 1px;
   gap: 10px;
   background-color: aliceblue;
-}
-
-.undone{
-  color: $negative;
-}
-
-.done{
-  color: $positive;
 }
 
 .validation-message{

@@ -1,9 +1,17 @@
-import React from 'react';
-import { IAssignment, IFormProps, IFormState, IValidationError } from '../types/interfaces';
-import { FormInput } from './FormInput';
-import FormSubmit from './FormSubmit';
-import InputLabel from './InputLabel';
-import ValidationMessage from './ValidationMessage';
+import React, { FormEvent } from 'react';
+
+import { InputPrimitive } from '../primitives/InputPrimitive';
+import { Typography } from '../primitives/Typography';
+
+import { colors } from '../themes/colors';
+
+import {
+  IAssignment,
+  IFormProps,
+  IFormState,
+  InputTypes,
+  IValidationError,
+} from '../types/interfaces';
 
 export default class Form extends React.Component<IFormProps, IFormState> {
   constructor(props: IFormProps) {
@@ -40,17 +48,21 @@ export default class Form extends React.Component<IFormProps, IFormState> {
   };
 
   generateInputs() {
-    const { id } = this.state.assignmentData;
-    const keys = Object.keys(this.state.assignmentData) as Array<keyof IAssignment>;
+    const { assignmentData } = this.state;
+    const { id } = assignmentData;
+    const keys = Object.keys(assignmentData) as Array<keyof IAssignment>;
     const inputId = id > -1 ? `${id}-upd` : `${id}-create`;
     return keys.map((key) => {
       if (key != 'id') {
         return (
           <React.Fragment key={key}>
             {this.generateLabel(inputId, key)}
-            <FormInput
+            <InputPrimitive
+              type={
+                typeof assignmentData[key] === 'boolean' ? InputTypes.checkbox : InputTypes.text
+              }
               name={key}
-              value={this.state.assignmentData[key]}
+              value={assignmentData[key]}
               onChange={this.handleInput}
               id={inputId}
             />
@@ -61,7 +73,11 @@ export default class Form extends React.Component<IFormProps, IFormState> {
   }
 
   generateLabel(id: string, key: string) {
-    return <InputLabel id={id} name={key} />;
+    return (
+      <Typography as="label" additionalProps={{ htmlFor: id }}>
+        {key}
+      </Typography>
+    );
   }
 
   validateForm() {
@@ -111,29 +127,37 @@ export default class Form extends React.Component<IFormProps, IFormState> {
     return shouldUpdate;
   }
 
+  handleClickOnSubmit = () => {
+    if (this.state.isValid) {
+      this.props.onSubmit(this.state.assignmentData);
+    }
+  };
+
+  handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!this.state.isValid) {
+      this.setState((state) => ({ ...state, error: { ...state.error, isActive: true } }));
+    } else {
+      this.setState((state) => ({ ...state, error: { ...state.error, isActive: false } }));
+      this.props.toggleForm();
+    }
+  };
+
   render() {
     const inputs = this.generateInputs() as JSX.Element[];
     return (
-      <form
-        className="assignment-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!this.state.isValid) {
-            this.setState((state) => ({ ...state, error: { ...state.error, isActive: true } }));
-          } else {
-            this.setState((state) => ({ ...state, error: { ...state.error, isActive: false } }));
-            this.props.toggleForm();
-          }
-        }}
-      >
+      <form className="assignment-form" onSubmit={this.handleSubmit}>
         {inputs}
         {this.state.error.isActive && this.state.error.errorMessage ? (
-          <ValidationMessage message={this.state.error.errorMessage} />
+          <Typography as="p" className="validation-message" color={colors.WHITE}>
+            {this.state.error.errorMessage}
+          </Typography>
         ) : null}
-        <FormSubmit
-          onSubmit={this.props.onSubmit}
-          submitData={this.state.assignmentData}
-          isValid={this.state.isValid}
+        <InputPrimitive
+          type={InputTypes.submit}
+          value="Confirm action"
+          className="button-like"
+          onChange={this.handleClickOnSubmit}
         />
       </form>
     );

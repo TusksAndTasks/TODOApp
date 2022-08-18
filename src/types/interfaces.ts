@@ -1,5 +1,8 @@
 import React, { ReactNode } from 'react';
 
+import { colors } from '../themes/colors';
+import { fontSizes } from '../themes/fontSizes';
+
 export interface IAssignment extends IAssignmentData {
   id: number;
 }
@@ -48,19 +51,28 @@ export interface IFormProps {
   assigment?: IAssignment;
   onSubmit: (arg: IAssignment) => void;
   toggleForm: () => void;
-  // onSubmit: (arg: IAssignment) => void;
+}
+
+export enum InputTypes {
+  text = 'text',
+  checkbox = 'checkbox',
+  submit = 'submit',
 }
 
 export interface IInputProps {
-  // type: string;
-  id: string;
-  name: string;
+  type: InputTypes;
   value: string | boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  name?: string;
+  id?: string;
+  className?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void | (() => void);
 }
 
-export interface ISubmitForm {
-  onSubmit: (arg: IAssignment) => void;
-  submitData: IAssignment;
-  isValid: boolean;
+export interface ITypographyProps {
+  children: React.ReactNode;
+  as?: keyof HTMLElementTagNameMap;
+  className?: string;
+  color?: colors;
+  fontSize?: fontSizes;
+  additionalProps?: { [key: string]: string };
 }
