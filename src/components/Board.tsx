@@ -124,16 +124,26 @@ export default class Board extends React.Component<EmptyProperty, IBoardState> {
   deleteMarked = async () => {
     const doneTasks = this.state.assignments.filter((assignment: IAssignment) => assignment.done);
 
-    const response = await Promise.all(
-      doneTasks.map((task) => apiController.deleteAssignment(task.id))
-    );
+    const newArr = await doneTasks.reduce(async (previousValue, currentValue) => {
+      const arr = await this.deleteAssignment(await previousValue, currentValue.id);
+      if (arr) {
+        return arr;
+      }
+      return previousValue;
+    }, Promise.resolve(this.state.assignments.slice()));
 
-    if (response) {
-      const undoneTasks = this.state.assignments.filter(
-        (assignment: IAssignment) => !assignment.done
-      );
-      this.changeState(undoneTasks);
-    }
+    this.changeState(newArr);
+
+    // const response = await Promise.all(
+    //   doneTasks.map((task) => apiController.deleteAssignment(task.id))
+    // );
+    //
+    // if (response) {
+    //   const undoneTasks = this.state.assignments.filter(
+    //     (assignment: IAssignment) => !assignment.done
+    //   );
+    //   this.changeState(undoneTasks);
+    // }
   };
 
   generateAssignments = () => {
