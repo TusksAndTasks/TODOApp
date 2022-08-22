@@ -1,8 +1,9 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 
-enum buttonModes {
+export enum buttonModes {
   PRIMARY = 'PRIMARY',
+  AUTH = 'AUTH',
 }
 
 type ButtonPrimitiveProps = {
@@ -43,8 +44,26 @@ export const clickableElement = css`
   }
 `;
 
+const authButton = css`
+  font-size: 12px;
+  padding: 4px;
+  background-color: white;
+  color: black;
+  border-radius: 25px;
+  width: 120px;
+  transition: 1s;
+  margin: 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: white;
+    background-color: black;
+  }
+`;
+
 const buttonStylesMap = {
   [buttonModes.PRIMARY]: clickableElement,
+  [buttonModes.AUTH]: authButton,
 };
 
 const StyledButton = styled.button<{ mode: buttonModes }>`

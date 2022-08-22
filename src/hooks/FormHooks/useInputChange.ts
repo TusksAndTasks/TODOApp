@@ -11,6 +11,7 @@ export enum AssignmentPropertiesEnum {
   TITLE = 'titleChange',
   DESCRIPTION = 'descriptionChange',
   DONE = 'doneChange',
+  AUTHOR = 'authorChange',
 }
 
 export default function useInputChange(
@@ -24,6 +25,8 @@ export default function useInputChange(
         return { ...state, done: action.payload as boolean };
       case AssignmentPropertiesEnum.DESCRIPTION:
         return { ...state, description: action.payload as string };
+      case AssignmentPropertiesEnum.AUTHOR:
+        return { ...state, author: action.payload as string };
       default:
         return { ...state };
     }

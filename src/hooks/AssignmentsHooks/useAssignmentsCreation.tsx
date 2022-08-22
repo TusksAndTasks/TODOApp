@@ -6,6 +6,8 @@ import RedactableAssigment from '../../components/RedactableAssigment';
 import { IAssignment } from '../../types/interfaces';
 import { BoardPropertiesEnum } from '../../types/types';
 import { createAssignmentsCallbackType } from './useAssignmentsState';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 export type IBoardAction = {
   type: BoardPropertiesEnum;
@@ -37,7 +39,14 @@ export default function useAssignmentsCreation({
     return assignments.map((assignment) => {
       return (
         <FormRouter onClick={createAssignment} assignment={assignment} key={assignment.id}>
-          <RedactableAssigment assignmentData={assignment} handleDelete={deleteAssignment} />
+          <StyledLink
+            to={{
+              pathname: `assignment/${assignment.id}`,
+              state: { ...assignment },
+            }}
+          >
+            <RedactableAssigment assignmentData={assignment} handleDelete={deleteAssignment} />
+          </StyledLink>
         </FormRouter>
       );
     });
@@ -45,3 +54,12 @@ export default function useAssignmentsCreation({
 
   return useMemo(() => generateAssignments(), [assignments]);
 }
+
+export const StyledLink = styled(Link)`
+  text-decoration: inherit;
+  color: inherit;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;

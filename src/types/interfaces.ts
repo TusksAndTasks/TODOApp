@@ -5,6 +5,7 @@ export interface IAssignment extends IAssignmentData {
 export interface IAssignmentData extends IDoableTasks {
   title: string;
   description: string;
+  author: string;
 }
 
 export interface IDoableTasks {

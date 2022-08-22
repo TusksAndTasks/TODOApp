@@ -13,15 +13,12 @@ export interface IRedactableAssignmentProps {
 }
 
 function RedactableAssigment({ assignmentData, handleDelete }: IRedactableAssignmentProps) {
-  const { title, description, done } = assignmentData;
+  const { title, done } = assignmentData;
   return (
     <div>
       <ButtonPrimitive onClick={() => handleDelete(assignmentData)}>Delete</ButtonPrimitive>
       <Typography as="h2" color={done ? colors.BLUE : colors.PURPLE}>
         {title}
-      </Typography>
-      <Typography as="p" color={done ? colors.BLUE : colors.PURPLE}>
-        {description}
       </Typography>
       <p>{done ? completionStatus.DONE : completionStatus.UNDONE}</p>
     </div>

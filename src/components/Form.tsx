@@ -23,15 +23,17 @@ function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
   let description = '';
   let done = false;
   let id = -1;
+  let author = '';
 
   if (assignment) {
-    ({ title, id, done, description } = assignment);
+    ({ title, id, done, description, author } = assignment);
   }
 
   const initialInputsState: IAssignmentData = {
     title: title,
     description: description,
     done: done,
+    author: author,
   };
 
   const [inputsState, handleInput] = useInputChange(initialInputsState);
