@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
 
 import ButtonPrimitive from '../primitives/ButtonPrimitive';
@@ -28,9 +28,9 @@ function FormRouter({ assignment, onClick, children }: IRouterProps) {
   const mode = assignment ? formMode.UPDATE : formMode.CREATE;
   const status = assignment?.done ? completionStatus.DONE : completionStatus.UNDONE;
 
-  function toggleForm() {
+  const toggleForm = useCallback(() => {
     setIsOpen(!isOpen);
-  }
+  }, [isOpen]);
 
   return isOpen ? (
     <FormContainer mode={mode}>
