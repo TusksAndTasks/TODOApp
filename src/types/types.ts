@@ -1,9 +1,3 @@
-export enum AssignmentPropertiesEnum {
-  TITLE = 'titleChange',
-  DESCRIPTION = 'descriptionChange',
-  DONE = 'doneChange',
-}
-
 export enum BoardPropertiesEnum {
   ADD = 'add',
   UPDATE = 'update',
@@ -11,3 +5,8 @@ export enum BoardPropertiesEnum {
   MARK = 'mark',
   DELETEMARKED = 'deleteMarked',
 }
+
+export type SingleChangeActionTypes =
+  | BoardPropertiesEnum.ADD
+  | BoardPropertiesEnum.UPDATE
+  | BoardPropertiesEnum.DELETE;

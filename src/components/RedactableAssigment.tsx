@@ -1,22 +1,31 @@
 import React from 'react';
-import { IRedactableAssignmentProps } from '../types/interfaces';
-import {
-  AssignmentTitle,
-  AssignmentDescription,
-  StyledButton,
-} from '../styledComponents/styledComponents';
 
-export default function RedactableAssigment({
-  assignmentData,
-  handleDelete,
-}: IRedactableAssignmentProps) {
+import ButtonPrimitive from '../primitives/ButtonPrimitive';
+import Typography from '../primitives/Typography';
+
+import { IAssignment } from '../types/interfaces';
+import { colors } from '../themes/colors';
+import { completionStatus } from './FormRouter';
+
+export interface IRedactableAssignmentProps {
+  assignmentData: IAssignment;
+  handleDelete: (assignment: IAssignment) => void;
+}
+
+function RedactableAssigment({ assignmentData, handleDelete }: IRedactableAssignmentProps) {
   const { title, description, done } = assignmentData;
   return (
     <div>
-      <StyledButton onClick={() => handleDelete(assignmentData)}>Delete</StyledButton>
-      <AssignmentTitle status={done ? 'done' : 'undone'}>{title}</AssignmentTitle>
-      <AssignmentDescription status={done ? 'done' : 'undone'}>{description}</AssignmentDescription>
-      <p>{done ? 'done' : 'undone'}</p>
+      <ButtonPrimitive onClick={() => handleDelete(assignmentData)}>Delete</ButtonPrimitive>
+      <Typography as="h2" color={done ? colors.BLUE : colors.PURPLE}>
+        {title}
+      </Typography>
+      <Typography as="p" color={done ? colors.BLUE : colors.PURPLE}>
+        {description}
+      </Typography>
+      <p>{done ? completionStatus.DONE : completionStatus.UNDONE}</p>
     </div>
   );
 }
+
+export default React.memo(RedactableAssigment);
