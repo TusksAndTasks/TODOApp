@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 
 import ButtonPrimitive from '../primitives/ButtonPrimitive';
@@ -9,6 +9,8 @@ import useAssignmentsState from '../hooks/AssignmentsHooks/useAssignmentsState';
 import useAssignmentsCreation from '../hooks/AssignmentsHooks/useAssignmentsCreation';
 
 import { BoardPropertiesEnum } from '../types/types';
+import { apiController } from '../utils/api';
+import { deleteMarkedRequest, markRequest } from '../utils/apiHelperFunctions';
 
 function Board() {
   const [assignments, assignmentsDispatch, createAssignmentsCallback] = useAssignmentsState();
@@ -18,21 +20,46 @@ function Board() {
     assignmentsDispatch,
   });
 
+  useEffect(() => {
+    const getAssignments = async () => {
+      const assignments = await apiController.getAssignments();
+      assignments.forEach((assignment) =>
+        createAssignmentsCallback(BoardPropertiesEnum.ADD, assignmentsDispatch)(assignment)
+      );
+    };
+    getAssignments();
+  }, []);
+
   return (
     <StyledBoard>
       <div>
         <ButtonPrimitive
           onClick={useMemo(
-            () => createAssignmentsCallback(BoardPropertiesEnum.MARK, assignmentsDispatch),
-            []
+            () => () => {
+              markRequest(assignments).then((isRequestSuccessful) => {
+                if (isRequestSuccessful) {
+                  createAssignmentsCallback(BoardPropertiesEnum.MARK, assignmentsDispatch)();
+                }
+              });
+            },
+            [assignments]
           )}
         >
           Mark all as done
         </ButtonPrimitive>
         <ButtonPrimitive
           onClick={useMemo(
-            () => createAssignmentsCallback(BoardPropertiesEnum.DELETEMARKED, assignmentsDispatch),
-            []
+            () => () => {
+              deleteMarkedRequest(assignments).then((isRequestSuccessful) => {
+                if (isRequestSuccessful) {
+                  createAssignmentsCallback(
+                    BoardPropertiesEnum.DELETEMARKED,
+                    assignmentsDispatch
+                  )();
+                }
+              });
+            },
+            [assignments]
           )}
         >
           Delete all completed tasks

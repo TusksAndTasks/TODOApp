@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useReducer, useState } from 'react';
 import { IAssignment } from '../../types/interfaces';
 import { BoardPropertiesEnum, SingleChangeActionTypes } from '../../types/types';
 import { IBoardAction } from './useAssignmentsCreation';
+import { apiController } from '../../utils/api';
 
 export type createAssignmentsCallbackType = <T extends BoardPropertiesEnum>(
   type: T,
@@ -16,12 +17,15 @@ type useAssignmentsReturns = [
 ];
 
 export default function useAssignmentsState(): useAssignmentsReturns {
-  const [currentId, setCurrentId] = useState(0);
+  const [currentId, setCurrentId] = useState(10);
 
   function boardStateReducer(state: IAssignment[], action: IBoardAction): IAssignment[] {
     switch (action.type) {
-      case BoardPropertiesEnum.ADD:
-        return [...state, { ...(action.payload as IAssignment), id: currentId }];
+      case BoardPropertiesEnum.ADD: {
+        const id =
+          (action.payload?.id as number) > -1 ? (action.payload as IAssignment).id : currentId;
+        return [...state, { ...(action.payload as IAssignment), id }];
+      }
       case BoardPropertiesEnum.UPDATE:
         return state.map((stateElem) => {
           if (stateElem.id === (action.payload as IAssignment).id) {
@@ -33,8 +37,8 @@ export default function useAssignmentsState(): useAssignmentsReturns {
         return state.filter((stateElem) => stateElem.id !== (action.payload as IAssignment).id);
       case BoardPropertiesEnum.MARK:
         if (state.find((stateElem) => !stateElem.done)) {
-          return state.map((stateELem) =>
-            stateELem.done ? stateELem : { ...stateELem, done: true }
+          return state.map((stateElem) =>
+            stateElem.done ? stateElem : { ...stateElem, done: true }
           );
         }
         return state;

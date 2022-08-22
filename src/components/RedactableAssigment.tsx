@@ -6,6 +6,7 @@ import Typography from '../primitives/Typography';
 import { IAssignment } from '../types/interfaces';
 import { colors } from '../themes/colors';
 import { completionStatus } from './FormRouter';
+import { apiController } from '../utils/api';
 
 export interface IRedactableAssignmentProps {
   assignmentData: IAssignment;
@@ -16,7 +17,15 @@ function RedactableAssigment({ assignmentData, handleDelete }: IRedactableAssign
   const { title, description, done } = assignmentData;
   return (
     <div>
-      <ButtonPrimitive onClick={() => handleDelete(assignmentData)}>Delete</ButtonPrimitive>
+      <ButtonPrimitive
+        onClick={() =>
+          apiController.deleteAssignment(assignmentData.id).then((res) => {
+            if (res) handleDelete(assignmentData);
+          })
+        }
+      >
+        Delete
+      </ButtonPrimitive>
       <Typography as="h2" color={done ? colors.BLUE : colors.PURPLE}>
         {title}
       </Typography>

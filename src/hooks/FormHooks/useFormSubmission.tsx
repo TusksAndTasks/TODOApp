@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
 import { IAssignment, IAssignmentData } from '../../types/interfaces';
+import { apiController } from '../../utils/api';
 
 type useFormSubmissionProps = {
   inputsState: IAssignmentData;
@@ -26,8 +27,17 @@ export default function useFormSubmission({
   const [errorIsActive, setErrorIsActive] = useState(false);
 
   const handleClickOnSubmit = useCallback(() => {
+    const apiControllerMethod = apiController.getCorrectMethod(id);
     if (isValid) {
-      onSubmit({ ...inputsState, id: id });
+      apiControllerMethod({ ...inputsState, id: id })
+        .catch((err) => {
+          throw err;
+        })
+        .then((res) => {
+          if (res) {
+            onSubmit({ ...inputsState, id: id });
+          }
+        });
     }
   }, [isValid, inputsState]);
 
