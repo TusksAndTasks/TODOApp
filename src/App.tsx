@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import HeaderPrimitive from './primitives/HeaderPrimitive';
 import Typography, { TypographyMode } from './primitives/Typography';
@@ -11,10 +11,16 @@ import AuthorizedPage from './components/AuthorizedPage';
 import Navigation from './components/Navigation';
 import PageNotFound from './components/PageNotFound';
 
-import { GlobalState } from './redux/store';
+import { GlobalDispatch, GlobalState } from './redux/store';
+import { getTodos } from './redux/slices/AssignmentsSlice';
 
 export default function App() {
   const isAuth = useSelector((state: GlobalState) => state.authorization.auth);
+  const assignmentsDispatch = useDispatch() as GlobalDispatch;
+
+  useEffect(() => {
+    assignmentsDispatch(getTodos());
+  }, []);
 
   return (
     <>

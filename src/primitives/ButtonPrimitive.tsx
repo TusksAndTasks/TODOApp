@@ -19,9 +19,13 @@ function ButtonPrimitive({
   children,
   onClick,
 }: ButtonPrimitiveProps) {
-  const callbackWithoutEventData = useCallback(() => {
-    onClick();
-  }, []);
+  const callbackWithoutEventData = useCallback(
+    (e: React.SyntheticEvent) => {
+      e.preventDefault();
+      onClick();
+    },
+    [onClick]
+  );
 
   return (
     <StyledButton onClick={callbackWithoutEventData} className={className} mode={mode}>

@@ -11,7 +11,7 @@ export default function useFormValidation(inputsState: IAssignmentData): [string
     let validationResult = true;
     let validationErrorMessage = 'Make sure this fields are filled:';
     keys.forEach((prop) => {
-      if (typeof inputsState[prop] === 'string' && inputsState[prop] === '') {
+      if (typeof inputsState[prop] === 'string' && inputsState[prop] === '' && prop !== 'file') {
         validationErrorMessage = validationErrorMessage + ` ${prop}-field`;
         validationResult = false;
       }

@@ -7,15 +7,21 @@ import FormRouter from '../../components/FormRouter';
 import RedactableAssigment from '../../components/RedactableAssigment';
 
 import { createAssignmentsCallbackType } from './useAssignmentsState';
-import { deleteAssignment, updateAssignment } from '../../redux/slices/AssignmentsSlice';
 import { GlobalState } from '../../redux/store';
+import { apiDeleteAssignments, apiUpdateAssignments } from '../../redux/slices/AssignmentsSlice';
 
 export default function useAssignmentsCreation(
   createAssignmentsCallback: createAssignmentsCallbackType
 ) {
   const assignments = useSelector((state: GlobalState) => state.assignments.assignments);
-  const updateAssignmentCallback = useMemo(() => createAssignmentsCallback(updateAssignment), []);
-  const deleteAssignmentCallback = useMemo(() => createAssignmentsCallback(deleteAssignment), []);
+  const updateAssignmentCallback = useMemo(
+    () => createAssignmentsCallback(apiUpdateAssignments),
+    []
+  );
+  const deleteAssignmentCallback = useMemo(
+    () => createAssignmentsCallback(apiDeleteAssignments),
+    []
+  );
 
   function generateAssignments() {
     return assignments.map((assignment) => {

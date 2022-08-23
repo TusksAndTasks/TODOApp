@@ -9,31 +9,45 @@ import useAssignmentsState from '../hooks/AssignmentsHooks/useAssignmentsState';
 import useAssignmentsCreation from '../hooks/AssignmentsHooks/useAssignmentsCreation';
 
 import {
-  addAssignment,
-  deleteMarkedAssignments,
-  markAssignmentsAsDone,
+  apiCreateAssignments,
+  apiDeleteMarked,
+  apiMarkAsDone,
 } from '../redux/slices/AssignmentsSlice';
+import { useSelector } from 'react-redux';
+import { GlobalState } from '../redux/store';
+import SpinnerPrimitive, { SpinnerSize } from '../primitives/SpinnerPrimitive';
 
 function Board() {
   const createAssignmentsCallback = useAssignmentsState();
   const assignmentList = useAssignmentsCreation(createAssignmentsCallback);
+  const { assignments, isLoading } = useSelector((state: GlobalState) => state.assignments);
 
   return (
     <StyledBoard>
       <div>
         <ButtonPrimitive
-          onClick={useMemo(() => createAssignmentsCallback(markAssignmentsAsDone), [])}
+          onClick={useMemo(
+            () => () => {
+              createAssignmentsCallback(apiMarkAsDone)(assignments.slice());
+            },
+            [assignments, isLoading]
+          )}
         >
           Mark all as done
         </ButtonPrimitive>
         <ButtonPrimitive
-          onClick={useMemo(() => createAssignmentsCallback(deleteMarkedAssignments), [])}
+          onClick={useMemo(
+            () => () => createAssignmentsCallback(apiDeleteMarked)(assignments),
+            [assignments, createAssignmentsCallback]
+          )}
         >
           Delete all completed tasks
         </ButtonPrimitive>
       </div>
-      <AssignmentTable>{assignmentList}</AssignmentTable>
-      <FormRouter onClick={useMemo(() => createAssignmentsCallback(addAssignment), [])} />
+      <AssignmentTable>
+        {isLoading ? <SpinnerPrimitive size={SpinnerSize.LARGE} /> : assignmentList}
+      </AssignmentTable>
+      <FormRouter onClick={useMemo(() => createAssignmentsCallback(apiCreateAssignments), [])} />
     </StyledBoard>
   );
 }
