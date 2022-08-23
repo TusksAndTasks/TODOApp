@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+
 import { assignmentReducer } from './slices/AssignmentsSlice';
 import { authorizationReducer } from './slices/AuthorizationSlice';
 

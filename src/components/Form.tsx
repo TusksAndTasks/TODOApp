@@ -1,13 +1,24 @@
-import React, { useEffect, useReducer, useState } from 'react';
-import { IAssignmentData, IFormAction, IFormProps } from '../types/interfaces';
-import { FormInput } from './FormInput';
-import FormSubmit from './FormSubmit';
-import InputLabel from './InputLabel';
-import ValidationMessage from './ValidationMessage';
-import { AssignmentPropertiesEnum } from '../types/types';
-import { StyledForm } from '../styledComponents/styledComponents';
+import React from 'react';
+import styled, { css } from 'styled-components';
 
-export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
+import InputPrimitive from '../primitives/InputPrimitive';
+import ValidationMessagePrimitive from '../primitives/ValidationMessagePrimitive';
+
+import useInputChange from '../hooks/FormHooks/useInputChange';
+import useInputCreation from '../hooks/FormHooks/useInputCreation';
+import useFormValidation from '../hooks/FormHooks/useFormValidation';
+import useFormSubmission from '../hooks/FormHooks/useFormSubmission';
+
+import { formMode } from './FormRouter';
+import { IAssignment, IAssignmentData, InputTypes } from '../types/interfaces';
+
+export interface IFormProps {
+  assignment?: IAssignment;
+  onSubmit: (arg: IAssignment) => void;
+  toggleForm: () => void;
+}
+
+function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
   let title = '';
   let description = '';
   let done = false;
@@ -19,26 +30,6 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
     ({ title, id, done, description, author, file } = assignment);
   }
 
-  function inputReducer(state: IAssignmentData, action: IFormAction): IAssignmentData {
-    switch (action.type) {
-      case AssignmentPropertiesEnum.TITLE:
-        return { ...state, title: action.payload as string };
-      case AssignmentPropertiesEnum.DONE:
-        return { ...state, done: action.payload as boolean };
-      case AssignmentPropertiesEnum.DESCRIPTION:
-        return { ...state, description: action.payload as string };
-      case AssignmentPropertiesEnum.AUTHOR:
-        return { ...state, author: action.payload as string };
-      case AssignmentPropertiesEnum.FILE:
-        return {
-          ...state,
-          file: action.payload ? URL.createObjectURL((action.payload as FileList)[0]) : '',
-        };
-      default:
-        return { ...state };
-    }
-  }
-
   const initialInputsState: IAssignmentData = {
     title: title,
     description: description,
@@ -47,71 +38,46 @@ export default function Form({ assignment, onSubmit, toggleForm }: IFormProps) {
     file: file,
   };
 
-  const [inputsState, inputsDispatch] = useReducer(inputReducer, initialInputsState);
-  const [isValid, setIsValid] = useState(false);
-  const [errorIsActive, setErrorIsActive] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [inputsState, handleInput] = useInputChange(initialInputsState);
+  const inputs = useInputCreation({ inputsState, handleInput, id });
+  const [errorMessage, isValid] = useFormValidation(inputsState);
+  const [errorIsActive, handleClickOnSubmit, handleSubmit] = useFormSubmission({
+    inputsState,
+    toggleForm,
+    onSubmit,
+    isValid,
+    id,
+  });
 
-  function handleInput(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { name, type } = e.target;
-    const value =
-      type === 'checkbox' ? e.target.checked : type === 'file' ? e.target.files : e.target.value;
-    inputsDispatch({ type: `${name}Change` as AssignmentPropertiesEnum, payload: value });
-  }
-
-  function generateInputs() {
-    const keys = Object.keys(inputsState) as Array<keyof IAssignmentData>;
-    const inputId = id > -1 ? `${id}-upd` : `${id}-create`;
-    return keys.map((key) => {
-      return (
-        <React.Fragment key={key}>
-          {generateLabel(inputId, key)}
-          <FormInput name={key} value={inputsState[key]} onChange={handleInput} id={inputId} />
-        </React.Fragment>
-      );
-    });
-  }
-
-  function generateLabel(id: string, key: string) {
-    return <InputLabel id={id} name={key} />;
-  }
-
-  useEffect(() => {
-    const keys = Object.keys(inputsState) as Array<keyof IAssignmentData>;
-    let validationResult = true;
-    let validationErrorMessage = 'Make sure this fields are filled:';
-    keys.forEach((prop) => {
-      if (typeof inputsState[prop] === 'string' && inputsState[prop] === '' && prop !== 'file') {
-        validationErrorMessage = validationErrorMessage + ` ${prop}-field`;
-        validationResult = false;
-      }
-    });
-    validationErrorMessage = validationResult ? '' : validationErrorMessage;
-    if (errorMessage !== validationErrorMessage) {
-      setErrorMessage(validationErrorMessage);
-    }
-    if (isValid !== validationResult) {
-      setIsValid(validationResult);
-    }
-  }, [inputsState, errorMessage]);
-
-  const inputs = generateInputs() as JSX.Element[];
   return (
-    <StyledForm
-      mode={assignment ? 'update' : 'create'}
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (!isValid) {
-          setErrorIsActive(true);
-        } else {
-          setErrorIsActive(false);
-          toggleForm();
-        }
-      }}
-    >
+    <StyledForm mode={assignment ? 'update' : 'create'} onSubmit={handleSubmit}>
       {inputs}
-      {errorIsActive && errorMessage ? <ValidationMessage message={errorMessage} /> : null}
-      <FormSubmit onSubmit={onSubmit} submitData={{ ...inputsState, id: id }} isValid={isValid} />
+      {errorIsActive && errorMessage ? (
+        <ValidationMessagePrimitive>{errorMessage}</ValidationMessagePrimitive>
+      ) : null}
+      <InputPrimitive
+        type={InputTypes.SUBMIT}
+        value="Confirm action"
+        className="button-like"
+        onChange={handleClickOnSubmit}
+      />
     </StyledForm>
   );
 }
+
+export default React.memo(Form);
+
+export const FormLike = css`
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  gap: 10px;
+`;
+
+export const StyledForm = styled.form<{ mode: string }>`
+  width: 100%;
+  ${FormLike};
+  border: ${(props) => (props.mode === formMode.CREATE ? 'none' : '1px solid red')};
+  background-color: aliceblue;
+  border-radius: 0 0 25px 25px;
+`;

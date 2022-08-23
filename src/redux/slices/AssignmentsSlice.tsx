@@ -1,5 +1,6 @@
-import { IAssignment, IAssignmentLite } from '../../types/interfaces';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { IAssignment } from '../../types/interfaces';
 
 const initialState: {
   assignments: Array<IAssignment>;
@@ -16,23 +17,26 @@ const assignmentSlice = createSlice({
       state.assignments = state.assignments.map((stateElem) => {
         if (stateElem.id === action.payload.id) {
           return action.payload;
-        } else {
-          return stateElem;
         }
+        return stateElem;
       });
     },
-    deleteAssignment: (state, action: PayloadAction<IAssignmentLite>) => {
+    deleteAssignment: (state, action: PayloadAction<IAssignment>) => {
       state.assignments = state.assignments.filter(
         (stateElem) => stateElem.id !== action.payload.id
       );
     },
     markAssignmentsAsDone: (state) => {
-      state.assignments = state.assignments.map((stateElem) => {
-        return { ...stateElem, done: true };
-      });
+      if (state.assignments.find((stateElem) => !stateElem.done)) {
+        state.assignments = state.assignments.map((stateElem) => {
+          return { ...stateElem, done: true };
+        });
+      }
     },
     deleteMarkedAssignments: (state) => {
-      state.assignments = state.assignments.filter((stateElem) => !stateElem.done);
+      if (state.assignments.find((stateElem) => stateElem.done)) {
+        state.assignments = state.assignments.filter((stateElem) => !stateElem.done);
+      }
     },
   },
 });
